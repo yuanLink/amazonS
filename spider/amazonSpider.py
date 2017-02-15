@@ -125,11 +125,17 @@ def Spider(needs):
     for eachNeed in needs:
         html = GetHTML(needs[eachNeed])
         if html == '':
+            # input error url
             return False
+
         if not os.path.exists(FILE_DIR + '\\' + eachNeed):
             os.mkdir(FILE_DIR + '\\' + eachNeed)
         pattern = pageDetail
         urlList = re.findall(pattern, html)
+        if len(urlList):
+            # the url is not the amazon url
+            return False
+
         bookInfo = []
         for eachurl in urlList:
             eachHTML = GetHTML(eachurl)
