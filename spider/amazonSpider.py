@@ -43,9 +43,14 @@ PictureDetail = ['PictureName',r'<img alt="" src="\ndata:image/jpeg;base64,([\s\
 def GetHTML(url,**argv):
     """ get pages
     argv :any argument that can use in url
-    ret html 
+    ret html if url is right,else return None
     """
-    res = requests.get(url ,headers = header)
+    try:
+        res = requests.get(url ,headers = header)
+    except Exception as e:
+        print(e)
+        return ''
+
     return res.text
 
 def MatchDetail(html, patterns):
@@ -106,6 +111,10 @@ def GetPicture(cont, dire):
 
 def Spider(needs):
     """the whole function of this spider
+
+    needs: a dictionary:{keywords:url}, if url is not correct ,it will output error!
+
+    Ret: if url is error it will return false, else it will return true
     """
 
     # create a filename to save excel
@@ -115,6 +124,8 @@ def Spider(needs):
     patterns = [dateDetail, authorDetail, priceDetail, publishingDetail, seriesDetail, contentDetail,ISBNDetail]
     for eachNeed in needs:
         html = GetHTML(needs[eachNeed])
+        if html == '':
+            return False
         if not os.path.exists(FILE_DIR + '\\' + eachNeed):
             os.mkdir(FILE_DIR + '\\' + eachNeed)
         pattern = pageDetail
@@ -136,6 +147,7 @@ def Spider(needs):
                     break
 
         SaveInExcel(bookInfo, eachNeed+'.xls')
+    return True
 
 if __name__ == "__main__":
     Spider(needs)
